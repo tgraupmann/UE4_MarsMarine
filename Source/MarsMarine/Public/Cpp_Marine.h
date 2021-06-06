@@ -61,6 +61,12 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void WeaponTrace();
 
+	UFUNCTION(BlueprintCallable)
+	void StartFiringWeapon();
+
+	UFUNCTION(BlueprintCallable)
+	void StopFiringWeapon();
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mouse Input")
 	float MouseDeadzone;
@@ -101,6 +107,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Sounds")
 	USoundBase* PlayerHurtSound;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Sounds")
+	USoundBase* RifleFireSound;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Sounds")
+	USoundBase* RifleEndSound;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Particles")
 	UParticleSystem* ParticleCharacterImpact;
 
@@ -110,5 +122,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Particles")
 	UNiagaraSystem* ParticleTracerFire;
 
-	UActorComponent* CompWeaponMount;
+	UParticleSystemComponent* CompMuzzleFlash;
+
+	UAudioComponent* WeaponFireSound;
 };

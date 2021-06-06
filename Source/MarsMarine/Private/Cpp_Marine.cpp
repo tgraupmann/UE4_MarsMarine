@@ -7,6 +7,7 @@
 #include <Runtime/Engine/Classes/Engine/SkeletalMeshSocket.h>
 #include <NiagaraFunctionLibrary.h>
 #include <NiagaraComponent.h>
+#include <Components/AudioComponent.h>
 
 // Sets default values
 ACpp_Marine::ACpp_Marine()
@@ -26,6 +27,13 @@ ACpp_Marine::ACpp_Marine()
 	DamagePerShot = 25.0f;
 	WeaponFireRate = 0.08f;
 	OutsideMissionArea = false;
+
+	PlayerHurtSound = nullptr;
+	RifleFireSound = nullptr;
+	RifleEndSound = nullptr;
+
+	CompMuzzleFlash = nullptr;
+	WeaponFireSound = nullptr;
 }
 
 // Called when the game starts or when spawned
@@ -33,7 +41,11 @@ void ACpp_Marine::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CompWeaponMount = GetComponentByClass(UParticleSystemComponent::StaticClass()); // Gets: P_AssaultRifle_MF
+	UActorComponent* CompSearch = GetComponentByClass(UParticleSystemComponent::StaticClass()); // Gets: P_AssaultRifle_MF
+	if (IsValid(CompSearch))
+	{
+		CompMuzzleFlash = Cast<UParticleSystemComponent>(CompSearch);
+	}
 }
 
 // Called every frame
@@ -101,9 +113,9 @@ FVector ACpp_Marine::GetWeaponTraceEndLocation() const
 
 void ACpp_Marine::SpawnTracerFire(FVector Loc) const
 {
-	if (IsValid(CompWeaponMount))
+	if (IsValid(CompMuzzleFlash))
 	{
-		USceneComponent* SceneComp = Cast<USceneComponent>(CompWeaponMount);
+		USceneComponent* SceneComp = Cast<USceneComponent>(CompMuzzleFlash);
 		if (IsValid(SceneComp))
 		{
 			UNiagaraComponent* Effect = UNiagaraFunctionLibrary::SpawnSystemAttached(ParticleTracerFire, SceneComp,
@@ -130,14 +142,14 @@ void ACpp_Marine::SpawnImpactHit(AActor* HitActor, FVector HitLocation) const
 		ACharacter* Character = Cast<ACharacter>(HitActor);
 		if (IsValid(Character))
 		{
-			if (ParticleCharacterImpact != nullptr)
+			if (IsValid(ParticleCharacterImpact))
 			{
 				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ParticleCharacterImpact, HitLocation);
 			}
 		}
 		else
 		{
-			if (ParticleNonCharacterImpact != nullptr)
+			if (IsValid(ParticleNonCharacterImpact))
 			{
 				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ParticleNonCharacterImpact, HitLocation);
 			}
@@ -164,5 +176,47 @@ void ACpp_Marine::WeaponTrace()
 			SpawnImpactHit(OutHit.Actor.Get(), OutHit.Location);
 			UGameplayStatics::ApplyDamage(OutHit.Actor.Get(), DamagePerShot, nullptr, nullptr, nullptr);
 		}
+	}
+}
+
+void ACpp_Marine::StartFiringWeapon()
+{
+	if (IsAlive())
+	{
+		if (IsValid(CompMuzzleFlash))
+		{
+			CompMuzzleFlash->Activate();
+		}
+
+		if (WeaponFireSound == nullptr)
+		{
+			WeaponFireSound = UGameplayStatics::SpawnSound2D(GetWorld(), RifleFireSound);
+
+			WeaponTrace();
+
+			FTimerDelegate TimerDel;
+			FTimerHandle TimerHandle;
+
+			TimerDel.BindUFunction(this, FName("WeaponTrace"));
+			GetWorldTimerManager().SetTimer(TimerHandle, TimerDel, WeaponFireRate, true);
+		}
+	}
+}
+
+void ACpp_Marine::StopFiringWeapon()
+{
+	if (IsValid(CompMuzzleFlash))
+	{
+		CompMuzzleFlash->Deactivate();
+	}
+
+	UKismetSystemLibrary::K2_ClearTimer(this, "WeaponTrace");
+
+	if (WeaponFireSound != nullptr)
+	{
+		WeaponFireSound->Stop();
+		WeaponFireSound = nullptr;
+
+		UGameplayStatics::SpawnSound2D(GetWorld(), RifleEndSound);
 	}
 }
