@@ -82,7 +82,7 @@ float ACpp_Marine::DecreaseHealth(float DamageAmount)
 
 	if (IsValid(PlayerHurtSound))
 	{
-		UGameplayStatics::PlaySound2D(GetWorld(), PlayerHurtSound);
+		UGameplayStatics::SpawnSound2D(GetWorld(), PlayerHurtSound);
 	}
 
 	return Health;
@@ -188,7 +188,7 @@ void ACpp_Marine::StartFiringWeapon()
 			CompMuzzleFlash->Activate();
 		}
 
-		if (WeaponFireSound == nullptr)
+		if (!IsValid(WeaponFireSound))
 		{
 			WeaponFireSound = UGameplayStatics::SpawnSound2D(GetWorld(), RifleFireSound);
 
@@ -212,11 +212,58 @@ void ACpp_Marine::StopFiringWeapon()
 
 	UKismetSystemLibrary::K2_ClearTimer(this, "WeaponTrace");
 
-	if (WeaponFireSound != nullptr)
+	if (IsValid(WeaponFireSound))
 	{
 		WeaponFireSound->Stop();
 		WeaponFireSound = nullptr;
 
 		UGameplayStatics::SpawnSound2D(GetWorld(), RifleEndSound);
 	}
+}
+
+float ACpp_Marine::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
+{
+	float Result = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	if (IsAlive())
+	{
+		if (DecreaseHealth(DamageAmount) <= 0.0f)
+		{
+			Dead = true;
+			StopFiringWeapon();
+
+			FTimerDelegate TimerDel;
+			FTimerHandle TimerHandle;
+
+			TimerDel.BindUFunction(this, FName("Respawn"));
+			GetWorldTimerManager().SetTimer(TimerHandle, TimerDel, 5.0f, false);
+		}
+	}
+
+	return Result;
+}
+
+void ACpp_Marine::Respawn()
+{
+	UGameplayStatics::OpenLevel(GetWorld(), FName("Mars"));
+}
+
+bool ACpp_Marine::IsDead() const
+{
+	return Dead;
+}
+
+int32 ACpp_Marine::GetKills() const
+{
+	return Kills;
+}
+
+bool ACpp_Marine::IsOutsideMissionArea() const
+{
+	return OutsideMissionArea;
+}
+
+void ACpp_Marine::SetOutsideMissionArea(bool Outside)
+{
+	OutsideMissionArea = Outside;
 }

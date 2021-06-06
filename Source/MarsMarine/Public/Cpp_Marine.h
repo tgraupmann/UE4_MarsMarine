@@ -67,6 +67,23 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void StopFiringWeapon();
 
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+
+	UFUNCTION(BlueprintCallable)
+	void Respawn();
+
+	UFUNCTION(BlueprintCallable)
+	bool IsDead() const;
+
+	UFUNCTION(BlueprintCallable)
+	int32 GetKills() const;
+
+	UFUNCTION(BlueprintCallable)
+	bool IsOutsideMissionArea() const;
+
+	UFUNCTION(BlueprintCallable)
+	void SetOutsideMissionArea(bool Outside);
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mouse Input")
 	float MouseDeadzone;
@@ -86,10 +103,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Properties")
 	float Health;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Properties")
 	int32 Kills;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Properties")
 	bool Dead;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
@@ -101,7 +115,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
 	float WeaponFireRate;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
 	bool OutsideMissionArea;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Sounds")
