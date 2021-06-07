@@ -164,25 +164,24 @@ void ACpp_Marine::WeaponTrace()
 	/*
 	FVector Start = GetWeaponTraceStartLocation();
 	FVector End = GetWeaponTraceEndLocation();
-	FHitResult OutHit;
-	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(this);
-	if (GetWorld()->LineTraceSingleByChannel(OutHit, Start, End, ECollisionChannel::ECC_Visibility, Params))
-	*/
-
-
-	FVector Start = GetWeaponTraceStartLocation();
-	FVector End = GetWeaponTraceEndLocation();
 	TArray<AActor*> ActorsToIgnore;
 	FHitResult OutHit;
 	if (UKismetSystemLibrary::LineTraceSingle(GetWorld(), Start, End,
 		UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_Visibility),
 		false, ActorsToIgnore,
-		EDrawDebugTrace::Type::None,
-		//EDrawDebugTrace::Type::ForDuration,
+		//EDrawDebugTrace::Type::None,
+		EDrawDebugTrace::Type::ForDuration,
 		OutHit, true
 		//, FLinearColor::Red, FLinearColor::Green, 1.0f
 	))
+	*/
+
+	FVector Start = GetWeaponTraceStartLocation();
+	FVector End = GetWeaponTraceEndLocation();
+	FHitResult OutHit;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+	if (GetWorld()->LineTraceSingleByChannel(OutHit, Start, End, ECollisionChannel::ECC_Visibility, Params))
 	{
 		if (OutHit.bBlockingHit)
 		{
