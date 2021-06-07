@@ -38,16 +38,15 @@ ACpp_Marine::ACpp_Marine()
 	WeaponFireSound = nullptr;
 }
 
+void ACpp_Marine::SetCompMuzzleFlash(UParticleSystemComponent* Comp)
+{
+	CompMuzzleFlash = Comp;
+}
+
 // Called when the game starts or when spawned
 void ACpp_Marine::BeginPlay()
 {
 	Super::BeginPlay();
-
-	UActorComponent* CompSearch = GetComponentByClass(UParticleSystemComponent::StaticClass()); // Gets: P_AssaultRifle_MF
-	if (IsValid(CompSearch))
-	{
-		CompMuzzleFlash = Cast<UParticleSystemComponent>(CompSearch);
-	}
 }
 
 // Called every frame

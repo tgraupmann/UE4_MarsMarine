@@ -88,6 +88,9 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	float GetHealth() const;
 
+	UFUNCTION(BlueprintCallable)
+	void SetCompMuzzleFlash(UParticleSystemComponent* Comp);
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mouse Input")
 	float MouseDeadzone;
@@ -147,7 +150,6 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Particles")
 	UNiagaraSystem* ParticleTracerFire;
-
 
 	UParticleSystemComponent* CompMuzzleFlash;
 
