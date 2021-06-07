@@ -72,10 +72,18 @@ protected:
 	USoundBase* EnemyHurtSound;
 
 
+	UPROPERTY(VisibleAnywhere, Category = "Enemy Properties")
 	bool Dead;
+
+	UPROPERTY(VisibleAnywhere, Category = "Enemy Properties")
 	float Health;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy Properties")
 	float DamagePerHit;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Enemy Properties")
 	float AttackRange;
+
 
 	FOnMontageEnded DelegateMontageSuccess;
 	

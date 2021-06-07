@@ -14,12 +14,6 @@ ACpp_Alien::ACpp_Alien()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-}
-
-// Called when the game starts or when spawned
-void ACpp_Alien::BeginPlay()
-{
-	Super::BeginPlay();
 
 	AttackRange = 150;
 	DamagePerHit = 15.0;
@@ -27,6 +21,12 @@ void ACpp_Alien::BeginPlay()
 	Dead = false;
 
 	Montage = nullptr;
+}
+
+// Called when the game starts or when spawned
+void ACpp_Alien::BeginPlay()
+{
+	Super::BeginPlay();
 
 	DelegateMontageSuccess.BindUFunction(this, "OnMontageSuccess");
 
