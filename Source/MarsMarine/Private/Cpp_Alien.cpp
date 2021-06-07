@@ -7,6 +7,7 @@
 #include <GameFramework/CharacterMovementComponent.h>
 #include "Kismet/GameplayStatics.h"
 #include <Kismet/KismetMathLibrary.h>
+#include <AIController.h>
 
 // Sets default values
 ACpp_Alien::ACpp_Alien()
@@ -24,7 +25,12 @@ void ACpp_Alien::BeginPlay()
 	DamagePerHit = 15.0;
 	Health = 100;
 	Dead = false;
+
 	Montage = nullptr;
+
+	DelegateMontageSuccess.BindUFunction(this, "OnMontageSuccess");
+
+	FollowPlayer();
 }
 
 // Called every frame
@@ -32,6 +38,29 @@ void ACpp_Alien::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (CanAttack())
+	{
+		DeactivateAIMovement();
+		USkeletalMeshComponent* MeshComp = GetMesh();
+		if (IsValid(MeshComp) &&
+			IsValid(Montage))
+		{
+			UAnimInstance* AnimComp = MeshComp->GetAnimInstance();
+			if (IsValid(AnimComp))
+			{
+				AnimComp->Montage_SetEndDelegate(DelegateMontageSuccess, Montage);
+				AnimComp->Montage_Play(Montage);
+			}
+		}
+	}
+}
+
+void ACpp_Alien::OnMontageSuccess(UAnimMontage* MontageParam, bool bInterrupted)
+{
+	if (!bInterrupted && IsAlive())
+	{
+		ActivateAIMovement();
+	}
 }
 
 // Called to bind functionality to input
@@ -53,7 +82,7 @@ bool ACpp_Alien::IsDead() const
 
 bool ACpp_Alien::CanAttack() const
 {
-	return IsWithinAttackRange() && IsAlive() && !IsAttacking();
+	return (IsWithinAttackRange() && IsAlive() && !IsAttacking());
 }
 
 bool ACpp_Alien::IsAttacking() const
@@ -159,4 +188,31 @@ void ACpp_Alien::KillAI()
 float ACpp_Alien::GetHealth() const
 {
 	return Health;
+}
+
+UFUNCTION(BlueprintCallable)
+void ACpp_Alien::FollowPlayer()
+{
+	if (IsAlive())
+	{
+		AController* BaseController = GetController();
+		if (IsValid(BaseController))
+		{
+			AAIController* AI = Cast<AAIController>(BaseController);
+			if (IsValid(AI))
+			{
+				ACharacter* Character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+				if (IsValid(Character))
+				{
+					AI->MoveToActor(Character);
+
+					FTimerDelegate TimerDel;
+					FTimerHandle TimerHandle;
+
+					TimerDel.BindUFunction(this, FName("FollowPlayer"));
+					GetWorldTimerManager().SetTimer(TimerHandle, TimerDel, 2.0f, false);
+				}
+			}
+		}
+	}
 }

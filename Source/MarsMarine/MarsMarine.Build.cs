@@ -8,7 +8,7 @@ public class MarsMarine : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "NiagaraCore", "Niagara" });
+		PublicDependencyModuleNames.AddRange(new string[] { "AIModule", "Core", "CoreUObject", "Engine", "InputCore", "NiagaraCore", "Niagara" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

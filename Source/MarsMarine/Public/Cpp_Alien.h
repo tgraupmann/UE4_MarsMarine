@@ -61,6 +61,9 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void KillAI();
 
+	UFUNCTION(BlueprintCallable)
+	void FollowPlayer();
+
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Animation")
 	UAnimMontage* Montage;
@@ -73,4 +76,9 @@ protected:
 	float Health;
 	float DamagePerHit;
 	float AttackRange;
+
+	FOnMontageEnded DelegateMontageSuccess;
+	
+	UFUNCTION()
+	void OnMontageSuccess(UAnimMontage* MontageParam, bool bInterrupted);
 };
