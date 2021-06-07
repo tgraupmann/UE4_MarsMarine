@@ -28,6 +28,9 @@ public:
 
 protected:
 
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+
+
 	UFUNCTION(BlueprintCallable)
 	bool IsAlive() const;
 
@@ -60,6 +63,9 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void KillAI();
+
+	UFUNCTION(BlueprintCallable)
+	void DestroyActor();
 
 	UFUNCTION(BlueprintCallable)
 	void FollowPlayer();

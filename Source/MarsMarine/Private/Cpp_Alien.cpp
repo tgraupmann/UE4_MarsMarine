@@ -57,7 +57,7 @@ void ACpp_Alien::Tick(float DeltaTime)
 
 void ACpp_Alien::OnMontageSuccess(UAnimMontage* MontageParam, bool bInterrupted)
 {
-	if (!bInterrupted && IsAlive())
+	if (IsAlive())
 	{
 		ActivateAIMovement();
 	}
@@ -215,4 +215,31 @@ void ACpp_Alien::FollowPlayer()
 			}
 		}
 	}
+}
+
+float ACpp_Alien::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
+{
+	float Result = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	if (IsAlive())
+	{
+		if (DecreaseHealth(DamageAmount) <= 0.0f)
+		{
+			Dead = true;
+			KillAI();
+
+			FTimerDelegate TimerDel;
+			FTimerHandle TimerHandle;
+
+			TimerDel.BindUFunction(this, FName("DestroyActor"));
+			GetWorldTimerManager().SetTimer(TimerHandle, TimerDel, 3.0f, false);
+		}
+	}
+
+	return Result;
+}
+
+void ACpp_Alien::DestroyActor()
+{
+	Destroy();
 }

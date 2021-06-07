@@ -37,6 +37,9 @@ public:
 
 protected:
 
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+
+
 	UFUNCTION(BlueprintCallable)
 	bool IsHealthFull() const;
 
@@ -66,8 +69,6 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void StopFiringWeapon();
-
-	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 	UFUNCTION(BlueprintCallable)
 	void Respawn();
