@@ -195,26 +195,31 @@ void ACpp_Alien::FollowPlayer()
 {
 	if (IsAlive())
 	{
-		AController* BaseController = GetController();
-		if (IsValid(BaseController))
+		if (!IsAttacking())
 		{
-			AAIController* AI = Cast<AAIController>(BaseController);
-			if (IsValid(AI))
+			ActivateAIMovement();
+
+			AController* BaseController = GetController();
+			if (IsValid(BaseController))
 			{
-				ACharacter* Character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-				if (IsValid(Character))
+				AAIController* AI = Cast<AAIController>(BaseController);
+				if (IsValid(AI))
 				{
-					AI->MoveToActor(Character);
-
-					FTimerDelegate TimerDel;
-					FTimerHandle TimerHandle;
-
-					TimerDel.BindUFunction(this, FName("FollowPlayer"));
-					GetWorldTimerManager().SetTimer(TimerHandle, TimerDel, 2.0f, false);
+					ACharacter* Character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+					if (IsValid(Character))
+					{
+						AI->MoveToActor(Character);
+					}
 				}
 			}
 		}
-	}
+
+		FTimerDelegate TimerDel;
+		FTimerHandle TimerHandle;
+
+		TimerDel.BindUFunction(this, FName("FollowPlayer"));
+		GetWorldTimerManager().SetTimer(TimerHandle, TimerDel, 1.0f, false);
+	}	
 }
 
 float ACpp_Alien::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
