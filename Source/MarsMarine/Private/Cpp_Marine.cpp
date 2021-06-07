@@ -164,18 +164,21 @@ void ACpp_Marine::WeaponTrace()
 	TArray<AActor*> ActorsToIgnore;
 	FHitResult OutHit;
 	if (UKismetSystemLibrary::LineTraceSingle(GetWorld(), Start, End,
-		ETraceTypeQuery::TraceTypeQuery1, //visibility
+		UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_Visibility),
 		false, ActorsToIgnore,
-		EDrawDebugTrace::Type::None,
-		//EDrawDebugTrace::Type::ForDuration,
+		//EDrawDebugTrace::Type::None,
+		EDrawDebugTrace::Type::ForDuration,
 		OutHit, true
-		//, FLinearColor::Red, FLinearColor::Green, 1.0f
-		))
+		, FLinearColor::Red, FLinearColor::Green, 1.0f
+	))
 	{
-		if (OutHit.Actor.IsValid())
+		if (OutHit.bBlockingHit)
 		{
-			SpawnImpactHit(OutHit.Actor.Get(), OutHit.Location);
-			UGameplayStatics::ApplyDamage(OutHit.Actor.Get(), DamagePerShot, nullptr, nullptr, nullptr);
+			if (OutHit.Actor.IsValid())
+			{
+				SpawnImpactHit(OutHit.Actor.Get(), OutHit.Location);
+				UGameplayStatics::ApplyDamage(OutHit.Actor.Get(), DamagePerShot, nullptr, nullptr, nullptr);
+			}
 		}
 	}
 }
@@ -194,7 +197,6 @@ void ACpp_Marine::StartFiringWeapon()
 			WeaponFireSound = UGameplayStatics::SpawnSound2D(GetWorld(), RifleFireSound);
 
 			WeaponTrace();
-
 			
 			if (!TimerHandleWeaponTrace.IsValid())
 			{
