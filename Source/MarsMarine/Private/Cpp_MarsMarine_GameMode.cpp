@@ -103,3 +103,8 @@ void ACpp_MarsMarine_GameMode::StartNewWave()
 
 	UKismetSystemLibrary::K2_SetTimer(this, "Spawn Wave", SpawnFrequency, true);
 }
+
+int32 ACpp_MarsMarine_GameMode::GetRemainingEnemies() const
+{
+	return Aliens.Num();
+}

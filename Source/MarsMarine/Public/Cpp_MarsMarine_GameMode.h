@@ -16,6 +16,14 @@ class MARSMARINE_API ACpp_MarsMarine_GameMode : public AGameModeBase
 
 	virtual void BeginPlay() override;
 
+public:
+
+	UFUNCTION(BlueprintCallable)
+	void RegisterAlienDeath(ACharacter* Alien);
+
+	UFUNCTION(BlueprintCallable)
+	int32 GetRemainingEnemies() const;
+
 protected:
 
 	UFUNCTION(BlueprintCallable)
@@ -26,9 +34,6 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	bool IsWaveComplete() const;
-
-	UFUNCTION(BlueprintCallable)
-	void RegisterAlienDeath(ACharacter* Alien);
 
 	UFUNCTION(BlueprintCallable)
 	ATargetPoint* GetRandomSpawnPoint() const;

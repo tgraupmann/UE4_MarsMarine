@@ -29,6 +29,12 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UFUNCTION(BlueprintCallable)
+	bool IsAlive() const;
+
+	UFUNCTION(BlueprintCallable)
+	void IncreaseKills();
+
 protected:
 
 	UFUNCTION(BlueprintCallable)
@@ -39,12 +45,6 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	float DecreaseHealth(float DamageAmount);
-
-	UFUNCTION(BlueprintCallable)
-	void IncreaseKills();
-
-	UFUNCTION(BlueprintCallable)
-	bool IsAlive() const;
 
 	UFUNCTION(BlueprintCallable)
 	FVector GetWeaponTraceStartLocation() const;
