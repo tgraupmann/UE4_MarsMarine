@@ -100,22 +100,28 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Thumbstick Input")
 	float ThumbstickSmoothingStrength;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Player Properties")
+
+	UPROPERTY(EditDefaultsOnly, Category = "Player Properties")
 	float Health;
 
+	UPROPERTY(VisibleAnywhere, Category = "Player Properties")
 	int32 Kills;
+
+	UPROPERTY(VisibleAnywhere, Category = "Player Properties")
 	bool Dead;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
+	UPROPERTY(EditDefaultsOnly, Category = "Player Properties")
 	float WeaponRange;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
+	UPROPERTY(EditDefaultsOnly, Category = "Player Properties")
 	float DamagePerShot;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
+	UPROPERTY(EditDefaultsOnly, Category = "Player Properties")
 	float WeaponFireRate;
 
+	UPROPERTY(VisibleAnywhere, Category = "Player Properties")
 	bool OutsideMissionArea;
+
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Sounds")
 	USoundBase* PlayerHurtSound;
