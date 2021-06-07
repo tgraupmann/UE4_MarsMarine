@@ -168,8 +168,9 @@ void ACpp_Marine::WeaponTrace()
 		false, ActorsToIgnore,
 		EDrawDebugTrace::Type::None,
 		//EDrawDebugTrace::Type::ForDuration,
-		OutHit, true,
-		FLinearColor::Red, FLinearColor::Green, 1.0f))
+		OutHit, true
+		//, FLinearColor::Red, FLinearColor::Green, 1.0f
+		))
 	{
 		if (OutHit.Actor.IsValid())
 		{
@@ -194,11 +195,13 @@ void ACpp_Marine::StartFiringWeapon()
 
 			WeaponTrace();
 
-			FTimerDelegate TimerDel;
-			FTimerHandle TimerHandle;
-
-			TimerDel.BindUFunction(this, FName("WeaponTrace"));
-			GetWorldTimerManager().SetTimer(TimerHandle, TimerDel, WeaponFireRate, true);
+			
+			if (!TimerHandleWeaponTrace.IsValid())
+			{
+				FTimerDelegate TimerDel;
+				TimerDel.BindUFunction(this, "WeaponTrace");
+				GetWorldTimerManager().SetTimer(TimerHandleWeaponTrace, TimerDel, WeaponFireRate, true);
+			}
 		}
 	}
 }
@@ -210,7 +213,8 @@ void ACpp_Marine::StopFiringWeapon()
 		CompMuzzleFlash->Deactivate();
 	}
 
-	UKismetSystemLibrary::K2_ClearTimer(this, "WeaponTrace");
+	GetWorldTimerManager().ClearTimer(TimerHandleWeaponTrace);
+	TimerHandleWeaponTrace.Invalidate();
 
 	if (IsValid(WeaponFireSound))
 	{

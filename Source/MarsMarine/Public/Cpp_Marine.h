@@ -138,4 +138,6 @@ protected:
 	UParticleSystemComponent* CompMuzzleFlash;
 
 	UAudioComponent* WeaponFireSound;
+
+	FTimerHandle TimerHandleWeaponTrace;
 };
