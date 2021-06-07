@@ -85,6 +85,9 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void SetOutsideMissionArea(bool Outside);
 
+	UFUNCTION(BlueprintCallable)
+	float GetHealth() const;
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mouse Input")
 	float MouseDeadzone;
@@ -123,6 +126,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Player Properties")
 	bool OutsideMissionArea;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Player Properties")
+	FVector WeaponTraceOffset;
+
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Sounds")
 	USoundBase* PlayerHurtSound;
@@ -141,6 +147,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Particles")
 	UNiagaraSystem* ParticleTracerFire;
+
 
 	UParticleSystemComponent* CompMuzzleFlash;
 

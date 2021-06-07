@@ -28,6 +28,8 @@ ACpp_Marine::ACpp_Marine()
 	WeaponFireRate = 0.08f;
 	OutsideMissionArea = false;
 
+	WeaponTraceOffset = FVector(0, 0, 50);
+
 	PlayerHurtSound = nullptr;
 	RifleFireSound = nullptr;
 	RifleEndSound = nullptr;
@@ -101,7 +103,7 @@ bool ACpp_Marine::IsAlive() const
 FVector ACpp_Marine::GetWeaponTraceStartLocation() const
 {
 	USkeletalMeshComponent* MeshComp = GetMesh();
-	return MeshComp->GetSocketLocation("MuzzleFlash");
+	return MeshComp->GetSocketLocation("MuzzleFlash") + WeaponTraceOffset;
 }
 
 FVector ACpp_Marine::GetWeaponTraceEndLocation() const
@@ -159,6 +161,16 @@ void ACpp_Marine::SpawnImpactHit(AActor* HitActor, FVector HitLocation) const
 
 void ACpp_Marine::WeaponTrace()
 {
+	/*
+	FVector Start = GetWeaponTraceStartLocation();
+	FVector End = GetWeaponTraceEndLocation();
+	FHitResult OutHit;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+	if (GetWorld()->LineTraceSingleByChannel(OutHit, Start, End, ECollisionChannel::ECC_Visibility, Params))
+	*/
+
+
 	FVector Start = GetWeaponTraceStartLocation();
 	FVector End = GetWeaponTraceEndLocation();
 	TArray<AActor*> ActorsToIgnore;
@@ -166,10 +178,10 @@ void ACpp_Marine::WeaponTrace()
 	if (UKismetSystemLibrary::LineTraceSingle(GetWorld(), Start, End,
 		UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_Visibility),
 		false, ActorsToIgnore,
-		//EDrawDebugTrace::Type::None,
-		EDrawDebugTrace::Type::ForDuration,
+		EDrawDebugTrace::Type::None,
+		//EDrawDebugTrace::Type::ForDuration,
 		OutHit, true
-		, FLinearColor::Red, FLinearColor::Green, 1.0f
+		//, FLinearColor::Red, FLinearColor::Green, 1.0f
 	))
 	{
 		if (OutHit.bBlockingHit)
@@ -272,4 +284,9 @@ bool ACpp_Marine::IsOutsideMissionArea() const
 void ACpp_Marine::SetOutsideMissionArea(bool Outside)
 {
 	OutsideMissionArea = Outside;
+}
+
+float ACpp_Marine::GetHealth() const
+{
+	return Health;
 }

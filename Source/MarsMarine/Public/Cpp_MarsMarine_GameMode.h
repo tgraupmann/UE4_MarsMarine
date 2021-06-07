@@ -47,6 +47,10 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void StartNewWave();
 
+	UFUNCTION(BlueprintCallable)
+	int32 GetCurrentWave() const;
+
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemies")
 	TArray<ACharacter*> Aliens;
 

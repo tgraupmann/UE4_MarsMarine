@@ -108,3 +108,8 @@ int32 ACpp_MarsMarine_GameMode::GetRemainingEnemies() const
 {
 	return Aliens.Num();
 }
+
+int32 ACpp_MarsMarine_GameMode::GetCurrentWave() const
+{
+	return CurrentWave;
+}
