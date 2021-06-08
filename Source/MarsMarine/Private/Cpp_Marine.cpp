@@ -2,6 +2,7 @@
 
 
 #include "Cpp_Marine.h"
+#include "Cpp_PlayerHUD.h"
 #include "Kismet/GameplayStatics.h"
 #include <Kismet/KismetInputLibrary.h>
 #include <Kismet/KismetMathLibrary.h>
@@ -9,6 +10,7 @@
 #include <NiagaraFunctionLibrary.h>
 #include <NiagaraComponent.h>
 #include <Components/AudioComponent.h>
+#include <Blueprint/UserWidget.h>
 
 // Sets default values
 ACpp_Marine::ACpp_Marine()
@@ -48,13 +50,26 @@ void ACpp_Marine::SetCompMuzzleFlash(UParticleSystemComponent* Comp)
 void ACpp_Marine::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (IsValid(HUDClass))
+	{
+		UUserWidget* Widget = CreateWidget(GetWorld(), HUDClass);
+		if (IsValid(Widget))
+		{
+			UCpp_PlayerHUD* PlayerHUD = Cast<UCpp_PlayerHUD>(Widget);
+			if (IsValid(PlayerHUD))
+			{
+				PlayerHUD->Marine = this;
+			}
+			Widget->AddToViewport();
+		}
+	}
 }
 
 // Called every frame
 void ACpp_Marine::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 // Called to bind functionality to input

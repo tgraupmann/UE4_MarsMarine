@@ -100,6 +100,10 @@ protected:
 	void SetCompMuzzleFlash(UParticleSystemComponent* Comp);
 
 
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	class TSubclassOf<UUserWidget> HUDClass;
+
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mouse Input")
 	float MouseDeadzone;
 
