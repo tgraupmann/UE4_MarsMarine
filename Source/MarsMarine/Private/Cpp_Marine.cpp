@@ -39,6 +39,9 @@ ACpp_Marine::ACpp_Marine()
 
 	CompMuzzleFlash = nullptr;
 	WeaponFireSound = nullptr;
+
+	AxisThumbstickAimUp = 0;
+	AxisThumbstickAimRight = 0;
 }
 
 void ACpp_Marine::SetCompMuzzleFlash(UParticleSystemComponent* Comp)
@@ -70,6 +73,8 @@ void ACpp_Marine::BeginPlay()
 void ACpp_Marine::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	UpdatePlayerAim();
 }
 
 // Called to bind functionality to input
@@ -82,6 +87,9 @@ void ACpp_Marine::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 	PlayerInputComponent->BindAxis("Thumbstick MoveForward", this, &ACpp_Marine::ThumbstickMoveForward);
 	PlayerInputComponent->BindAxis("Thumbstick MoveRight", this, &ACpp_Marine::ThumbstickMoveRight);
+
+	PlayerInputComponent->BindAxis("Thumbstick AimUp", this, &ACpp_Marine::ThumbstickAimUp);
+	PlayerInputComponent->BindAxis("Thumbstick AimRight", this, &ACpp_Marine::ThumbstickAimRight);
 
 	PlayerInputComponent->BindAction("AnyKey", IE_Pressed, this, &ACpp_Marine::AnyKeyPressed);
 	PlayerInputComponent->BindAction("AnyKey", IE_Released, this, &ACpp_Marine::AnyKeyReleased);
@@ -120,6 +128,16 @@ void ACpp_Marine::ThumbstickMoveRight(float AxisValue)
 	{
 		AddMovementInput(FVector(0, 1, 0) * AxisValue);
 	}
+}
+
+void ACpp_Marine::ThumbstickAimUp(float AxisValue)
+{
+	AxisThumbstickAimUp = AxisValue;
+}
+
+void ACpp_Marine::ThumbstickAimRight(float AxisValue)
+{
+	AxisThumbstickAimRight = AxisValue;
 }
 
 void ACpp_Marine::AnyKeyPressed(FKey Key)
@@ -432,6 +450,57 @@ void ACpp_Marine::UpdateMouseAim()
 		{
 			FRotator NewRotation = GetMouseAimDirection();
 			PlayerController->SetControlRotation(NewRotation);
+		}
+	}
+}
+
+bool ACpp_Marine::IsThumbstickAboveDeadzone() const
+{
+	FVector2D Vec(AxisThumbstickAimUp, AxisThumbstickAimRight);
+	return (UKismetMathLibrary::VSize2D(Vec) > ThumbstickDeadzone);
+}
+
+FRotator ACpp_Marine::GetThumbstickAimDirection() const
+{
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	if (IsValid(PlayerController))
+	{
+		FRotator ControlRotation = PlayerController->GetControlRotation();
+
+		FRotator Target = FRotator::ZeroRotator;
+		Target.Yaw = UKismetMathLibrary::DegAtan2(AxisThumbstickAimRight, AxisThumbstickAimUp);
+
+		return UKismetMathLibrary::RInterpTo(ControlRotation, Target,
+			UGameplayStatics::GetWorldDeltaSeconds(GetWorld()),
+			MouseSmoothingStrength);
+	}
+	return FRotator::ZeroRotator;
+}
+
+void ACpp_Marine::UpdateThumbstickAim()
+{
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	if (IsValid(PlayerController))
+	{
+		if (IsThumbstickAboveDeadzone())
+		{
+			FRotator NewRotation = GetThumbstickAimDirection();
+			PlayerController->SetControlRotation(NewRotation);
+		}
+	}
+}
+
+void ACpp_Marine::UpdatePlayerAim()
+{
+	if (IsAlive())
+	{
+		if (GamepadActive)
+		{
+			UpdateThumbstickAim();
+		}
+		else
+		{
+			UpdateMouseAim();
 		}
 	}
 }

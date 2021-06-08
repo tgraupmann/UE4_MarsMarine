@@ -27,6 +27,8 @@ protected:
 	void MoveRight(float AxisValue);
 	void ThumbstickMoveForward(float AxisValue);
 	void ThumbstickMoveRight(float AxisValue);
+	void ThumbstickAimUp(float AxisValue);
+	void ThumbstickAimRight(float AxisValue);
 	void AnyKeyPressed(FKey Key);
 	void AnyKeyReleased(FKey Key);
 
@@ -59,6 +61,21 @@ protected:
 
 	UFUNCTION(BlueprintCallable, Category = "Mouse Input")
 	void UpdateMouseAim();
+
+
+	UFUNCTION(BlueprintCallable, Category = "Thumbstick Input")
+	bool IsThumbstickAboveDeadzone() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Thumbstick Input")
+	FRotator GetThumbstickAimDirection() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Thumbstick Input")
+	void UpdateThumbstickAim();
+
+	
+	UFUNCTION(BlueprintCallable)
+	void UpdatePlayerAim();
+
 
 	UFUNCTION(BlueprintCallable)
 	bool IsHealthFull() const;
@@ -180,4 +197,7 @@ protected:
 	UAudioComponent* WeaponFireSound;
 
 	FTimerHandle TimerHandleWeaponTrace;
+
+	float AxisThumbstickAimUp;
+	float AxisThumbstickAimRight;
 };
