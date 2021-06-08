@@ -22,6 +22,14 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	// Input
+	void MoveForward(float AxisValue);
+	void MoveRight(float AxisValue);
+	void ThumbstickMoveForward(float AxisValue);
+	void ThumbstickMoveRight(float AxisValue);
+	void AnyKeyPressed(FKey Key);
+	void AnyKeyReleased(FKey Key);
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

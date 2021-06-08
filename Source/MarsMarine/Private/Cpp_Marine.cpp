@@ -3,6 +3,7 @@
 
 #include "Cpp_Marine.h"
 #include "Kismet/GameplayStatics.h"
+#include <Kismet/KismetInputLibrary.h>
 #include <Kismet/KismetMathLibrary.h>
 #include <Runtime/Engine/Classes/Engine/SkeletalMeshSocket.h>
 #include <NiagaraFunctionLibrary.h>
@@ -61,6 +62,85 @@ void ACpp_Marine::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	PlayerInputComponent->BindAxis("MoveForward", this, &ACpp_Marine::MoveForward);
+	PlayerInputComponent->BindAxis("MoveRight", this, &ACpp_Marine::MoveRight);
+
+	PlayerInputComponent->BindAxis("Thumbstick MoveForward", this, &ACpp_Marine::ThumbstickMoveForward);
+	PlayerInputComponent->BindAxis("Thumbstick MoveRight", this, &ACpp_Marine::ThumbstickMoveRight);
+
+	PlayerInputComponent->BindAction("AnyKey", IE_Pressed, this, &ACpp_Marine::AnyKeyPressed);
+	PlayerInputComponent->BindAction("AnyKey", IE_Released, this, &ACpp_Marine::AnyKeyReleased);
+
+	PlayerInputComponent->BindAction("Fire Weapon", IE_Pressed, this, &ACpp_Marine::StartFiringWeapon);
+	PlayerInputComponent->BindAction("Fire Weapon", IE_Released, this, &ACpp_Marine::StopFiringWeapon);
+}
+
+void ACpp_Marine::MoveForward(float AxisValue)
+{
+	if (IsAlive() && !GamepadActive)
+	{
+		AddMovementInput(FVector(1, 0, 0) * AxisValue);
+	}
+}
+
+void ACpp_Marine::MoveRight(float AxisValue)
+{
+	if (IsAlive() && !GamepadActive)
+	{
+		AddMovementInput(FVector(0, 1, 0) * AxisValue);
+	}
+}
+
+void ACpp_Marine::ThumbstickMoveForward(float AxisValue)
+{
+	if (IsAlive() && GamepadActive)
+	{
+		AddMovementInput(FVector(1, 0, 0) * AxisValue);
+	}
+}
+
+void ACpp_Marine::ThumbstickMoveRight(float AxisValue)
+{
+	if (IsAlive() && GamepadActive)
+	{
+		AddMovementInput(FVector(0, 1, 0) * AxisValue);
+	}
+}
+
+void ACpp_Marine::AnyKeyPressed(FKey Key)
+{
+	if (UKismetInputLibrary::Key_IsKeyboardKey(Key))
+	{
+		GamepadActive = false;
+	}
+
+	else if (UKismetInputLibrary::Key_IsMouseButton(Key))
+	{
+		GamepadActive = false;
+	}
+
+	else if (UKismetInputLibrary::Key_IsGamepadKey(Key))
+	{
+		GamepadActive = true;
+	}
+}
+
+void ACpp_Marine::AnyKeyReleased(FKey Key)
+{
+	if (UKismetInputLibrary::Key_IsKeyboardKey(Key))
+	{
+		GamepadActive = false;
+	}
+	
+	else if (UKismetInputLibrary::Key_IsMouseButton(Key))
+	{
+		GamepadActive = false;
+	}
+
+	else if (UKismetInputLibrary::Key_IsGamepadKey(Key))
+	{
+		GamepadActive = true;
+	}
 }
 
 bool ACpp_Marine::IsHealthFull() const
