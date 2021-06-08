@@ -383,3 +383,55 @@ float ACpp_Marine::GetHealth() const
 {
 	return Health;
 }
+
+FVector2D ACpp_Marine::GetMouseVelocity() const
+{
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	if (IsValid(PlayerController))
+	{
+		float DeltaX, DeltaY;
+		PlayerController->GetInputMouseDelta(DeltaX, DeltaY);
+
+		float DeltaSeconds = UGameplayStatics::GetWorldDeltaSeconds(GetWorld());
+		return (FVector2D(DeltaX, DeltaY) / DeltaSeconds);
+	}
+	return FVector2D::ZeroVector;
+}
+
+bool ACpp_Marine::IsMouseAboveDeadzone() const
+{
+	FVector2D Vec = GetMouseVelocity();
+	return (UKismetMathLibrary::VSize2D(Vec) > MouseDeadzone);
+}
+
+FRotator ACpp_Marine::GetMouseAimDirection() const
+{
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	if (IsValid(PlayerController))
+	{
+		FRotator ControlRotation = PlayerController->GetControlRotation();
+		
+		FVector2D Vec = GetMouseVelocity();
+
+		FRotator Target = FRotator::ZeroRotator;
+		Target.Yaw = UKismetMathLibrary::DegAtan2(Vec.X, Vec.Y);
+
+		return UKismetMathLibrary::RInterpTo(ControlRotation, Target,
+			UGameplayStatics::GetWorldDeltaSeconds(GetWorld()),
+			MouseSmoothingStrength);
+	}
+	return FRotator::ZeroRotator;
+}
+
+void ACpp_Marine::UpdateMouseAim()
+{
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	if (IsValid(PlayerController))
+	{
+		if (IsMouseAboveDeadzone())
+		{
+			FRotator NewRotation = GetMouseAimDirection();
+			PlayerController->SetControlRotation(NewRotation);
+		}
+	}
+}

@@ -47,6 +47,18 @@ protected:
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
+	
+	UFUNCTION(BlueprintCallable, Category = "Mouse Input")
+	FVector2D GetMouseVelocity() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Mouse Input")
+	bool IsMouseAboveDeadzone() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Mouse Input")
+	FRotator GetMouseAimDirection() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Mouse Input")
+	void UpdateMouseAim();
 
 	UFUNCTION(BlueprintCallable)
 	bool IsHealthFull() const;
