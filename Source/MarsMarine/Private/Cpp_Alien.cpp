@@ -5,7 +5,7 @@
 #include "Cpp_Marine.h"
 #include "Cpp_MarsMarine_GameMode.h"
 #include <GameFramework/CharacterMovementComponent.h>
-#include "Kismet/GameplayStatics.h"
+#include <Kismet/GameplayStatics.h>
 #include <Kismet/KismetMathLibrary.h>
 #include <AIController.h>
 

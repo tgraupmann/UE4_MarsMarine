@@ -51,6 +51,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	float AddHealth(float HealthToAdd);
 
+	UFUNCTION(BlueprintCallable)
+	void SetOutsideMissionArea(bool Outside);
+
+	UFUNCTION(BlueprintCallable)
+	float GetHealth() const;
+
 protected:
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
@@ -118,12 +124,6 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	bool IsOutsideMissionArea() const;
-
-	UFUNCTION(BlueprintCallable)
-	void SetOutsideMissionArea(bool Outside);
-
-	UFUNCTION(BlueprintCallable)
-	float GetHealth() const;
 
 	UFUNCTION(BlueprintCallable)
 	void SetCompMuzzleFlash(UParticleSystemComponent* Comp);
