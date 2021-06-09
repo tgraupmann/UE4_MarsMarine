@@ -45,6 +45,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void IncreaseKills();
 
+	UFUNCTION(BlueprintCallable)
+	bool IsHealthFull() const;
+
+	UFUNCTION(BlueprintCallable)
+	float AddHealth(float HealthToAdd);
+
 protected:
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
@@ -76,12 +82,6 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void UpdatePlayerAim();
 
-
-	UFUNCTION(BlueprintCallable)
-	bool IsHealthFull() const;
-
-	UFUNCTION(BlueprintCallable)
-	float AddHealth(float HealthToAdd);
 
 	UFUNCTION(BlueprintCallable)
 	float DecreaseHealth(float DamageAmount);
