@@ -141,6 +141,9 @@ protected:
 	UFUNCTION()
 	void ClientOnRep_Health();
 
+	UFUNCTION()
+	void ClientOnRep_Kills();
+
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	class TSubclassOf<UUserWidget> HUDClass;
@@ -165,7 +168,7 @@ protected:
 	UPROPERTY(ReplicatedUsing = ClientOnRep_Health, EditDefaultsOnly, Category = "Player Properties")
 	float Health;
 
-	UPROPERTY(VisibleAnywhere, Category = "Player Properties")
+	UPROPERTY(ReplicatedUsing = ClientOnRep_Kills, VisibleAnywhere, Category = "Player Properties")
 	int32 Kills;
 
 	UPROPERTY(ReplicatedUsing = ClientOnRep_Dead, VisibleAnywhere, Category = "Player Properties")

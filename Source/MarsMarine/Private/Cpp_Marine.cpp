@@ -534,10 +534,16 @@ void ACpp_Marine::ClientOnRep_Health()
 
 }
 
+void ACpp_Marine::ClientOnRep_Kills()
+{
+
+}
+
 void ACpp_Marine::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ACpp_Marine, Dead);
 	DOREPLIFETIME(ACpp_Marine, Health);
+	DOREPLIFETIME(ACpp_Marine, Kills);
 }
