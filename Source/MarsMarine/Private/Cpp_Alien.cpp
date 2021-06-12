@@ -102,17 +102,13 @@ bool ACpp_Alien::IsAttacking() const
 
 bool ACpp_Alien::IsWithinAttackRange() const
 {
-	ACharacter* Character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-	if (IsValid(Character))
+	ACpp_Marine* Marine = GetNearestPlayer();
+	if (IsValid(Marine))
 	{
-		ACpp_Marine* Marine = Cast<ACpp_Marine>(Character);
-		if (IsValid(Marine))
+		if (Marine->IsAlive())
 		{
-			if (Marine->IsAlive())
-			{
-				float Distance = GetDistanceTo(Marine);
-				return (Distance < AttackRange);
-			}
+			float Distance = GetDistanceTo(Marine);
+			return (Distance < AttackRange);
 		}
 	}
 	return false;
@@ -141,10 +137,10 @@ void ACpp_Alien::DamagePlayer()
 {
 	if (IsAlive())
 	{
-		ACharacter* Character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-		if (IsValid(Character))
+		ACpp_Marine* Marine = GetNearestPlayer();
+		if (IsValid(Marine))
 		{
-			UGameplayStatics::ApplyDamage(Character, DamagePerHit, nullptr, nullptr, nullptr);
+			UGameplayStatics::ApplyDamage(Marine, DamagePerHit, nullptr, nullptr, nullptr);
 		}
 	}
 }
@@ -165,21 +161,17 @@ void ACpp_Alien::KillAI()
 	Dead = true;
 	DeactivateAIMovement();
 	SetActorEnableCollision(false);
-	ACharacter* Character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-	if (IsValid(Character))
+	ACpp_Marine* Marine = GetNearestPlayer();
+	if (IsValid(Marine))
 	{
-		ACpp_Marine* Marine = Cast<ACpp_Marine>(Character);
-		if (IsValid(Marine))
+		Marine->IncreaseKills();
+		AGameModeBase* BaseGameMode = UGameplayStatics::GetGameMode(GetWorld());
+		if (IsValid(BaseGameMode))
 		{
-			Marine->IncreaseKills();
-			AGameModeBase* BaseGameMode = UGameplayStatics::GetGameMode(GetWorld());
-			if (IsValid(BaseGameMode))
+			ACpp_MarsMarine_GameMode* GameMode = Cast<ACpp_MarsMarine_GameMode>(BaseGameMode);
+			if (IsValid(GameMode))
 			{
-				ACpp_MarsMarine_GameMode* GameMode = Cast<ACpp_MarsMarine_GameMode>(BaseGameMode);
-				if (IsValid(GameMode))
-				{
-					GameMode->RegisterAlienDeath(this);
-				}
+				GameMode->RegisterAlienDeath(this);
 			}
 		}
 	}
@@ -193,33 +185,36 @@ float ACpp_Alien::GetHealth() const
 UFUNCTION(BlueprintCallable)
 void ACpp_Alien::FollowPlayer()
 {
-	if (IsAlive())
+	if (GetLocalRole() == ROLE_Authority)
 	{
-		if (!IsAttacking())
+		if (IsAlive())
 		{
-			ActivateAIMovement();
-
-			AController* BaseController = GetController();
-			if (IsValid(BaseController))
+			if (!IsAttacking())
 			{
-				AAIController* AI = Cast<AAIController>(BaseController);
-				if (IsValid(AI))
+				ActivateAIMovement();
+
+				AController* BaseController = GetController();
+				if (IsValid(BaseController))
 				{
-					ACharacter* Character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-					if (IsValid(Character))
+					AAIController* AI = Cast<AAIController>(BaseController);
+					if (IsValid(AI))
 					{
-						AI->MoveToActor(Character);
+						ACpp_Marine* Marine = GetNearestPlayer();
+						if (IsValid(Marine))
+						{
+							AI->MoveToActor(Marine);
+						}
 					}
 				}
 			}
+
+			FTimerDelegate TimerDel;
+			FTimerHandle TimerHandle;
+
+			TimerDel.BindUFunction(this, FName("FollowPlayer"));
+			GetWorldTimerManager().SetTimer(TimerHandle, TimerDel, 1.0f, false);
 		}
-
-		FTimerDelegate TimerDel;
-		FTimerHandle TimerHandle;
-
-		TimerDel.BindUFunction(this, FName("FollowPlayer"));
-		GetWorldTimerManager().SetTimer(TimerHandle, TimerDel, 1.0f, false);
-	}	
+	}
 }
 
 float ACpp_Alien::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser)
@@ -250,4 +245,43 @@ float ACpp_Alien::TakeDamage(float DamageAmount, struct FDamageEvent const& Dama
 void ACpp_Alien::DestroyActor()
 {
 	Destroy();
+}
+
+ACpp_Marine* ACpp_Alien::GetMarine(int32 PlayerIndex) const
+{
+	ACharacter* Character = UGameplayStatics::GetPlayerCharacter(GetWorld(), PlayerIndex);
+	if (IsValid(Character))
+	{
+		return Cast<ACpp_Marine>(Character);
+	}
+	return nullptr;
+}
+
+ACpp_Marine* ACpp_Alien::GetNearestPlayer() const
+{
+	AGameModeBase* BaseGameMode = UGameplayStatics::GetGameMode(GetWorld());
+	if (IsValid(BaseGameMode))
+	{
+		ACpp_Marine* ClosestPlayer = nullptr;
+		float PlayerDistance = 5000;
+		for (int PlayerIndex = 0; PlayerIndex < BaseGameMode->GetNumPlayers(); ++PlayerIndex)
+		{
+			ACpp_Marine* Marine = GetMarine(PlayerIndex);
+			if (IsValid(Marine))
+			{
+				if (!Marine->IsAlive())
+				{
+					continue;
+				}
+				float NewDistance = GetDistanceTo(Marine);
+				if (NewDistance < PlayerDistance)
+				{
+					ClosestPlayer = Marine;
+					PlayerDistance = NewDistance;
+				}
+			}
+		}
+		return ClosestPlayer;
+	}
+	return nullptr;
 }
