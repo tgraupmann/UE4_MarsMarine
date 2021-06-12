@@ -134,8 +134,12 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void SetCompMuzzleFlash(UParticleSystemComponent* Comp);
 
+	
 	UFUNCTION()
 	void ClientOnRep_Dead();
+
+	UFUNCTION()
+	void ClientOnRep_Health();
 
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
@@ -158,7 +162,7 @@ protected:
 	float ThumbstickSmoothingStrength;
 
 
-	UPROPERTY(EditDefaultsOnly, Category = "Player Properties")
+	UPROPERTY(ReplicatedUsing = ClientOnRep_Health, EditDefaultsOnly, Category = "Player Properties")
 	float Health;
 
 	UPROPERTY(VisibleAnywhere, Category = "Player Properties")
