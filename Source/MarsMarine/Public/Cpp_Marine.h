@@ -134,6 +134,9 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void SetCompMuzzleFlash(UParticleSystemComponent* Comp);
 
+	UFUNCTION()
+	void ClientOnRep_Dead();
+
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	class TSubclassOf<UUserWidget> HUDClass;
@@ -161,7 +164,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "Player Properties")
 	int32 Kills;
 
-	UPROPERTY(VisibleAnywhere, Category = "Player Properties")
+	UPROPERTY(ReplicatedUsing = ClientOnRep_Dead, VisibleAnywhere, Category = "Player Properties")
 	bool Dead;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Player Properties")

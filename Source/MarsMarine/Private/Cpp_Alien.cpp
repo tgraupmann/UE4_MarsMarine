@@ -226,18 +226,21 @@ float ACpp_Alien::TakeDamage(float DamageAmount, struct FDamageEvent const& Dama
 {
 	float Result = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
-	if (IsAlive())
+	if (GetLocalRole() == ROLE_Authority)
 	{
-		if (DecreaseHealth(DamageAmount) <= 0.0f)
+		if (IsAlive())
 		{
-			Dead = true;
-			KillAI();
+			if (DecreaseHealth(DamageAmount) <= 0.0f)
+			{
+				Dead = true;
+				KillAI();
 
-			FTimerDelegate TimerDel;
-			FTimerHandle TimerHandle;
+				FTimerDelegate TimerDel;
+				FTimerHandle TimerHandle;
 
-			TimerDel.BindUFunction(this, FName("DestroyActor"));
-			GetWorldTimerManager().SetTimer(TimerHandle, TimerDel, 3.0f, false);
+				TimerDel.BindUFunction(this, FName("DestroyActor"));
+				GetWorldTimerManager().SetTimer(TimerHandle, TimerDel, 3.0f, false);
+			}
 		}
 	}
 

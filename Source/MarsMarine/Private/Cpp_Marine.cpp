@@ -3,7 +3,7 @@
 
 #include "Cpp_Marine.h"
 #include "Cpp_PlayerHUD.h"
-#include "Kismet/GameplayStatics.h"
+#include <Kismet/GameplayStatics.h>
 #include <Kismet/KismetInputLibrary.h>
 #include <Kismet/KismetMathLibrary.h>
 #include <Runtime/Engine/Classes/Engine/SkeletalMeshSocket.h>
@@ -11,6 +11,7 @@
 #include <NiagaraComponent.h>
 #include <Components/AudioComponent.h>
 #include <Blueprint/UserWidget.h>
+#include <Net/UnrealNetwork.h>
 
 // Sets default values
 ACpp_Marine::ACpp_Marine()
@@ -57,17 +58,21 @@ void ACpp_Marine::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (IsValid(HUDClass))
+	if (IsValid(GetController()) &&
+		GetController()->IsLocalController())
 	{
-		UUserWidget* Widget = CreateWidget(GetWorld(), HUDClass);
-		if (IsValid(Widget))
+		if (IsValid(HUDClass))
 		{
-			UCpp_PlayerHUD* PlayerHUD = Cast<UCpp_PlayerHUD>(Widget);
-			if (IsValid(PlayerHUD))
+			UUserWidget* Widget = CreateWidget(GetWorld(), HUDClass);
+			if (IsValid(Widget))
 			{
-				PlayerHUD->Marine = this;
+				UCpp_PlayerHUD* PlayerHUD = Cast<UCpp_PlayerHUD>(Widget);
+				if (IsValid(PlayerHUD))
+				{
+					PlayerHUD->Marine = this;
+				}
+				Widget->AddToViewport();
 			}
-			Widget->AddToViewport();
 		}
 	}
 }
@@ -365,18 +370,21 @@ float ACpp_Marine::TakeDamage(float DamageAmount, struct FDamageEvent const& Dam
 {
 	float Result = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 
-	if (IsAlive())
+	if (GetLocalRole() == ROLE_Authority)
 	{
-		if (DecreaseHealth(DamageAmount) <= 0.0f)
+		if (IsAlive())
 		{
-			Dead = true;
-			StopFiringWeapon();
+			if (DecreaseHealth(DamageAmount) <= 0.0f)
+			{
+				Dead = true;
+				StopFiringWeapon();
 
-			FTimerDelegate TimerDel;
-			FTimerHandle TimerHandle;
+				FTimerDelegate TimerDel;
+				FTimerHandle TimerHandle;
 
-			TimerDel.BindUFunction(this, FName("Respawn"));
-			GetWorldTimerManager().SetTimer(TimerHandle, TimerDel, 5.0f, false);
+				TimerDel.BindUFunction(this, FName("Respawn"));
+				GetWorldTimerManager().SetTimer(TimerHandle, TimerDel, 5.0f, false);
+			}
 		}
 	}
 
@@ -514,4 +522,16 @@ void ACpp_Marine::UpdatePlayerAim()
 			UpdateMouseAim();
 		}
 	}
+}
+
+void ACpp_Marine::ClientOnRep_Dead()
+{
+
+}
+
+void ACpp_Marine::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ACpp_Marine, Dead);
 }
