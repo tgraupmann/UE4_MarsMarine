@@ -107,6 +107,12 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void WeaponTrace();
 
+	void ServerClientWeaponTrace(bool IsServer);
+
+	// Server function
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerWeaponTrace();
+
 	UFUNCTION(BlueprintCallable)
 	void StartFiringWeapon();
 

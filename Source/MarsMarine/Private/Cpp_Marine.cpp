@@ -42,6 +42,9 @@ ACpp_Marine::ACpp_Marine()
 
 	AxisThumbstickAimUp = 0;
 	AxisThumbstickAimRight = 0;
+
+	SetReplicates(true);
+	SetReplicateMovement(true);
 }
 
 void ACpp_Marine::SetCompMuzzleFlash(UParticleSystemComponent* Comp)
@@ -271,23 +274,8 @@ void ACpp_Marine::SpawnImpactHit(AActor* HitActor, FVector HitLocation) const
 	}
 }
 
-void ACpp_Marine::WeaponTrace()
+void ACpp_Marine::ServerClientWeaponTrace(bool IsServer)
 {
-	/*
-	FVector Start = GetWeaponTraceStartLocation();
-	FVector End = GetWeaponTraceEndLocation();
-	TArray<AActor*> ActorsToIgnore;
-	FHitResult OutHit;
-	if (UKismetSystemLibrary::LineTraceSingle(GetWorld(), Start, End,
-		UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_Visibility),
-		false, ActorsToIgnore,
-		//EDrawDebugTrace::Type::None,
-		EDrawDebugTrace::Type::ForDuration,
-		OutHit, true
-		//, FLinearColor::Red, FLinearColor::Green, 1.0f
-	))
-	*/
-
 	FVector Start = GetWeaponTraceStartLocation();
 	FVector End = GetWeaponTraceEndLocation();
 	FHitResult OutHit;
@@ -300,10 +288,33 @@ void ACpp_Marine::WeaponTrace()
 			if (OutHit.Actor.IsValid())
 			{
 				SpawnImpactHit(OutHit.Actor.Get(), OutHit.Location);
-				UGameplayStatics::ApplyDamage(OutHit.Actor.Get(), DamagePerShot, nullptr, nullptr, nullptr);
+				if (IsServer)
+				{
+					UGameplayStatics::ApplyDamage(OutHit.Actor.Get(), DamagePerShot, nullptr, nullptr, nullptr);
+				}
 			}
 		}
 	}
+}
+
+void ACpp_Marine::ServerWeaponTrace_Implementation()
+{
+	ServerClientWeaponTrace(true);
+}
+
+bool ACpp_Marine::ServerWeaponTrace_Validate()
+{
+	return true;
+}
+
+void ACpp_Marine::WeaponTrace()
+{
+	if (GetLocalRole() != ROLE_Authority)
+	{
+		ServerClientWeaponTrace(false);
+	}
+
+	ServerWeaponTrace();
 }
 
 void ACpp_Marine::StartFiringWeapon()
@@ -374,7 +385,7 @@ float ACpp_Marine::TakeDamage(float DamageAmount, struct FDamageEvent const& Dam
 
 void ACpp_Marine::Respawn()
 {
-	UGameplayStatics::OpenLevel(GetWorld(), FName("Mars"));
+	//UGameplayStatics::OpenLevel(GetWorld(), FName("Mars"));
 }
 
 bool ACpp_Marine::IsDead() const
