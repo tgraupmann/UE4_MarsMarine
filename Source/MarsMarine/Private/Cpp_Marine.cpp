@@ -84,6 +84,20 @@ void ACpp_Marine::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	UpdatePlayerAim();
+
+	/*
+	if (IsLocallyControlled())
+	{
+		if (GetLocalRole() == ROLE_Authority)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("Server player: %d"), GetPlayerIndex()));
+		}
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("Client player: %d"), GetPlayerIndex()));
+		}
+	}
+	*/
 }
 
 // Called to bind functionality to input
