@@ -20,7 +20,7 @@ void ACpp_MIssionAreaVolume::NotifyActorBeginOverlap(AActor* OtherActor)
 		if (IsValid(OtherActor))
 		{
 			ACpp_Marine* Marine = Cast<ACpp_Marine>(OtherActor);
-			if (Marine)
+			if (IsValid(Marine))
 			{
 				Marine->SetOutsideMissionArea(false);
 				//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString::Printf(TEXT("Player Inside: %d"), Marine->GetPlayerIndex()));
@@ -40,7 +40,7 @@ void ACpp_MIssionAreaVolume::NotifyActorEndOverlap(AActor* OtherActor)
 		if (IsValid(OtherActor))
 		{
 			ACpp_Marine* Marine = Cast<ACpp_Marine>(OtherActor);
-			if (Marine)
+			if (IsValid(Marine))
 			{
 				Marine->SetOutsideMissionArea(true);
 				//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString::Printf(TEXT("Player Outside: %d"), Marine->GetPlayerIndex()));
@@ -61,7 +61,7 @@ void ACpp_MIssionAreaVolume::KillPlayer(ACpp_Marine* Marine)
 {
 	if (GetLocalRole() == ROLE_Authority)
 	{
-		if (Marine)
+		if (IsValid(Marine))
 		{
 			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Kill Player: %d"), Marine->GetPlayerIndex()));
 			UGameplayStatics::ApplyDamage(Marine, Marine->GetHealth(), nullptr, nullptr, nullptr);
