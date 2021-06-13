@@ -144,6 +144,9 @@ protected:
 	UFUNCTION()
 	void ClientOnRep_Kills();
 
+	UFUNCTION()
+	void ClientOnRep_OutsideMissionArea();
+
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	class TSubclassOf<UUserWidget> HUDClass;
@@ -174,6 +177,10 @@ protected:
 	UPROPERTY(ReplicatedUsing = ClientOnRep_Dead, VisibleAnywhere, Category = "Player Properties")
 	bool Dead;
 
+	UPROPERTY(ReplicatedUsing = ClientOnRep_OutsideMissionArea, VisibleAnywhere, Category = "Player Properties")
+	bool OutsideMissionArea;
+
+
 	UPROPERTY(EditDefaultsOnly, Category = "Player Properties")
 	float WeaponRange;
 
@@ -182,9 +189,6 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Player Properties")
 	float WeaponFireRate;
-
-	UPROPERTY(VisibleAnywhere, Category = "Player Properties")
-	bool OutsideMissionArea;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Player Properties")
 	FVector WeaponTraceOffset;

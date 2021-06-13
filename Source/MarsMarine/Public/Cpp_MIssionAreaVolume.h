@@ -23,11 +23,18 @@ public:
 
 protected:
 
+	class ACpp_Marine* GetMarine(int32 PlayerIndex) const;
+	
+	int32 GetPlayerIndex(class ACpp_Marine* Marine) const;
+
+	void MakeTimers();
+
+	FTimerHandle& GetTimer(class ACpp_Marine* Marine);
+
 	UFUNCTION()
-	void KillPlayer();
+	void KillPlayer(class ACpp_Marine* Marine);
 
 	float SecondsBeforePlayerDeath;
 
-	FTimerHandle TimerHandleKillPlayer;
-
+	TArray<FTimerHandle> TimersHandleKillPlayer;
 };

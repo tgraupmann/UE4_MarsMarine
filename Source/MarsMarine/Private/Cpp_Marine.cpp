@@ -58,8 +58,7 @@ void ACpp_Marine::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (IsValid(GetController()) &&
-		GetController()->IsLocalController())
+	if (IsLocallyControlled())
 	{
 		if (IsValid(HUDClass))
 		{
@@ -423,7 +422,12 @@ float ACpp_Marine::GetHealth() const
 
 FVector2D ACpp_Marine::GetMouseVelocity() const
 {
-	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+	if (!IsLocallyControlled())
+	{
+		return FVector2D::ZeroVector;
+	}
+
+	APlayerController* PlayerController = Cast<APlayerController>(Controller);
 	if (IsValid(PlayerController))
 	{
 		float DeltaX, DeltaY;
@@ -432,6 +436,7 @@ FVector2D ACpp_Marine::GetMouseVelocity() const
 		float DeltaSeconds = UGameplayStatics::GetWorldDeltaSeconds(GetWorld());
 		return (FVector2D(DeltaX, DeltaY) / DeltaSeconds);
 	}
+
 	return FVector2D::ZeroVector;
 }
 
@@ -443,33 +448,34 @@ bool ACpp_Marine::IsMouseAboveDeadzone() const
 
 FRotator ACpp_Marine::GetMouseAimDirection() const
 {
-	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	if (IsValid(PlayerController))
+	if (!IsLocallyControlled())
 	{
-		FRotator ControlRotation = PlayerController->GetControlRotation();
-		
-		FVector2D Vec = GetMouseVelocity();
-
-		FRotator Target = FRotator::ZeroRotator;
-		Target.Yaw = UKismetMathLibrary::DegAtan2(Vec.X, Vec.Y);
-
-		return UKismetMathLibrary::RInterpTo(ControlRotation, Target,
-			UGameplayStatics::GetWorldDeltaSeconds(GetWorld()),
-			MouseSmoothingStrength);
+		return FRotator::ZeroRotator;
 	}
-	return FRotator::ZeroRotator;
+
+	FRotator ControlRotation = Controller->GetControlRotation();
+		
+	FVector2D Vec = GetMouseVelocity();
+
+	FRotator Target = FRotator::ZeroRotator;
+	Target.Yaw = UKismetMathLibrary::DegAtan2(Vec.X, Vec.Y);
+
+	return UKismetMathLibrary::RInterpTo(ControlRotation, Target,
+		UGameplayStatics::GetWorldDeltaSeconds(GetWorld()),
+		MouseSmoothingStrength);
 }
 
 void ACpp_Marine::UpdateMouseAim()
 {
-	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	if (IsValid(PlayerController))
+	if (!IsLocallyControlled())
 	{
-		if (IsMouseAboveDeadzone())
-		{
-			FRotator NewRotation = GetMouseAimDirection();
-			PlayerController->SetControlRotation(NewRotation);
-		}
+		return;
+	}
+
+	if (IsMouseAboveDeadzone())
+	{
+		FRotator NewRotation = GetMouseAimDirection();
+		Controller->SetControlRotation(NewRotation);
 	}
 }
 
@@ -481,31 +487,32 @@ bool ACpp_Marine::IsThumbstickAboveDeadzone() const
 
 FRotator ACpp_Marine::GetThumbstickAimDirection() const
 {
-	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	if (IsValid(PlayerController))
+	if (!IsLocallyControlled())
 	{
-		FRotator ControlRotation = PlayerController->GetControlRotation();
-
-		FRotator Target = FRotator::ZeroRotator;
-		Target.Yaw = UKismetMathLibrary::DegAtan2(AxisThumbstickAimRight, AxisThumbstickAimUp);
-
-		return UKismetMathLibrary::RInterpTo(ControlRotation, Target,
-			UGameplayStatics::GetWorldDeltaSeconds(GetWorld()),
-			MouseSmoothingStrength);
+		return FRotator::ZeroRotator;
 	}
-	return FRotator::ZeroRotator;
+
+	FRotator ControlRotation = Controller->GetControlRotation();
+
+	FRotator Target = FRotator::ZeroRotator;
+	Target.Yaw = UKismetMathLibrary::DegAtan2(AxisThumbstickAimRight, AxisThumbstickAimUp);
+
+	return UKismetMathLibrary::RInterpTo(ControlRotation, Target,
+		UGameplayStatics::GetWorldDeltaSeconds(GetWorld()),
+		MouseSmoothingStrength);
 }
 
 void ACpp_Marine::UpdateThumbstickAim()
 {
-	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
-	if (IsValid(PlayerController))
+	if (!IsLocallyControlled())
 	{
-		if (IsThumbstickAboveDeadzone())
-		{
-			FRotator NewRotation = GetThumbstickAimDirection();
-			PlayerController->SetControlRotation(NewRotation);
-		}
+		return;
+	}
+
+	if (IsThumbstickAboveDeadzone())
+	{
+		FRotator NewRotation = GetThumbstickAimDirection();
+		Controller->SetControlRotation(NewRotation);
 	}
 }
 
@@ -539,6 +546,11 @@ void ACpp_Marine::ClientOnRep_Kills()
 
 }
 
+void ACpp_Marine::ClientOnRep_OutsideMissionArea()
+{
+
+}
+
 void ACpp_Marine::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -546,4 +558,5 @@ void ACpp_Marine::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLife
 	DOREPLIFETIME(ACpp_Marine, Dead);
 	DOREPLIFETIME(ACpp_Marine, Health);
 	DOREPLIFETIME(ACpp_Marine, Kills);
+	DOREPLIFETIME(ACpp_Marine, OutsideMissionArea);
 }
