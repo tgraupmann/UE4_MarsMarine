@@ -72,7 +72,7 @@ void ACpp_Marine::BeginPlay()
 					PlayerHUD->Marine = this;
 				}
 				Widget->AddToViewport();
-				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Created Player HUD: %d"), GetPlayerIndex()));
+				//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Created Player HUD: %d"), GetPlayerIndex()));
 			}
 		}
 	}
