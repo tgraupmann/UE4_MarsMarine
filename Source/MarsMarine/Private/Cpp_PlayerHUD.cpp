@@ -3,3 +3,8 @@
 
 #include "Cpp_PlayerHUD.h"
 
+
+class ACpp_Marine* UCpp_PlayerHUD::GetMarine() const
+{
+	return Marine;
+}

@@ -15,7 +15,9 @@ class MARSMARINE_API UCpp_PlayerHUD : public UUserWidget
 	GENERATED_BODY()
 
 public:
+
+	UFUNCTION(BlueprintCallable)
+	class ACpp_Marine* GetMarine() const;
 	
-	UPROPERTY(BlueprintReadOnly)
 	class ACpp_Marine* Marine;
 };
