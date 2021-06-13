@@ -28,7 +28,7 @@ protected:
 	FTimerHandle& GetTimer(class ACpp_Marine* Marine);
 
 	UFUNCTION()
-	void KillPlayer(class ACpp_Marine* Marine);
+	void KillPlayer(int32 PlayerIndex);
 
 	float SecondsBeforePlayerDeath;
 

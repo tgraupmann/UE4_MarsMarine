@@ -49,7 +49,7 @@ void ACpp_MIssionAreaVolume::NotifyActorEndOverlap(AActor* OtherActor)
 				if (!GetTimer(Marine).IsValid())
 				{
 					FTimerDelegate TimerDel;
-					TimerDel.BindUFunction(this, "KillPlayer", Marine);
+					TimerDel.BindUFunction(this, "KillPlayer", Marine->GetPlayerIndex());
 					GetWorldTimerManager().SetTimer(GetTimer(Marine), TimerDel, SecondsBeforePlayerDeath, false);
 				}
 			}
@@ -57,13 +57,14 @@ void ACpp_MIssionAreaVolume::NotifyActorEndOverlap(AActor* OtherActor)
 	}
 }
 
-void ACpp_MIssionAreaVolume::KillPlayer(ACpp_Marine* Marine)
+void ACpp_MIssionAreaVolume::KillPlayer(int32 PlayerIndex)
 {
 	if (GetLocalRole() == ROLE_Authority)
 	{
+		ACpp_Marine* Marine = ACpp_Marine::GetMarine(GetWorld(), PlayerIndex);
 		if (IsValid(Marine))
 		{
-			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Kill Player: %d"), Marine->GetPlayerIndex()));
+			//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Kill Player: %d"), PlayerIndex));
 			UGameplayStatics::ApplyDamage(Marine, Marine->GetHealth(), nullptr, nullptr, nullptr);
 		}
 	}
