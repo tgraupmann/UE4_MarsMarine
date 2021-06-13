@@ -32,7 +32,12 @@ protected:
 	void AnyKeyPressed(FKey Key);
 	void AnyKeyReleased(FKey Key);
 
-public:	
+public:
+
+	static class ACpp_Marine* GetMarine(UWorld* World, int32 PlayerIndex);
+
+	int32 GetPlayerIndex() const;
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

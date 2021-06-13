@@ -31,8 +31,6 @@ protected:
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
 
 	
-	class ACpp_Marine* GetMarine(int32 PlayerIndex) const;
-
 	class ACpp_Marine* GetNearestPlayer() const;
 
 

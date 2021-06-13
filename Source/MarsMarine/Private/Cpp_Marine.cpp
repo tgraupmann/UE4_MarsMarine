@@ -2,6 +2,7 @@
 
 
 #include "Cpp_Marine.h"
+#include "Cpp_MarsMarine_GameMode.h"
 #include "Cpp_PlayerHUD.h"
 #include <Kismet/GameplayStatics.h>
 #include <Kismet/KismetInputLibrary.h>
@@ -71,6 +72,7 @@ void ACpp_Marine::BeginPlay()
 					PlayerHUD->Marine = this;
 				}
 				Widget->AddToViewport();
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Created Player HUD: %d"), GetPlayerIndex()));
 			}
 		}
 	}
@@ -559,4 +561,34 @@ void ACpp_Marine::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLife
 	DOREPLIFETIME(ACpp_Marine, Health);
 	DOREPLIFETIME(ACpp_Marine, Kills);
 	DOREPLIFETIME(ACpp_Marine, OutsideMissionArea);
+}
+
+ACpp_Marine* ACpp_Marine::GetMarine(UWorld* World, int32 PlayerIndex)
+{
+	ACharacter* Character = UGameplayStatics::GetPlayerCharacter(World, PlayerIndex);
+	if (IsValid(Character))
+	{
+		return Cast<ACpp_Marine>(Character);
+	}
+	return nullptr;
+}
+
+int32 ACpp_Marine::GetPlayerIndex() const
+{
+	AGameModeBase* BaseGameMode = UGameplayStatics::GetGameMode(GetWorld());
+	if (IsValid(BaseGameMode))
+	{
+		for (int PlayerIndex = 0; PlayerIndex < BaseGameMode->GetNumPlayers(); ++PlayerIndex)
+		{
+			ACpp_Marine* Marine = ACpp_Marine::GetMarine(GetWorld(), PlayerIndex);
+			if (IsValid(Marine))
+			{
+				if (Marine == this)
+				{
+					return PlayerIndex;
+				}
+			}
+		}
+	}
+	return 0;
 }

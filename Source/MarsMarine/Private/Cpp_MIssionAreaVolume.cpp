@@ -23,6 +23,7 @@ void ACpp_MIssionAreaVolume::NotifyActorBeginOverlap(AActor* OtherActor)
 			if (Marine)
 			{
 				Marine->SetOutsideMissionArea(false);
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString::Printf(TEXT("Player Inside: %d"), Marine->GetPlayerIndex()));
 
 				MakeTimers();
 				GetWorldTimerManager().ClearTimer(GetTimer(Marine));
@@ -42,6 +43,7 @@ void ACpp_MIssionAreaVolume::NotifyActorEndOverlap(AActor* OtherActor)
 			if (Marine)
 			{
 				Marine->SetOutsideMissionArea(true);
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString::Printf(TEXT("Player Outside: %d"), Marine->GetPlayerIndex()));
 
 				MakeTimers();
 				if (!GetTimer(Marine).IsValid())
@@ -61,39 +63,10 @@ void ACpp_MIssionAreaVolume::KillPlayer(ACpp_Marine* Marine)
 	{
 		if (Marine)
 		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Kill Player: %d"), Marine->GetPlayerIndex()));
 			UGameplayStatics::ApplyDamage(Marine, Marine->GetHealth(), nullptr, nullptr, nullptr);
 		}
 	}
-}
-
-ACpp_Marine* ACpp_MIssionAreaVolume::GetMarine(int32 PlayerIndex) const
-{
-	ACharacter* Character = UGameplayStatics::GetPlayerCharacter(GetWorld(), PlayerIndex);
-	if (IsValid(Character))
-	{
-		return Cast<ACpp_Marine>(Character);
-	}
-	return nullptr;
-}
-
-int32 ACpp_MIssionAreaVolume::GetPlayerIndex(class ACpp_Marine* Marine) const
-{
-	AGameModeBase* BaseGameMode = UGameplayStatics::GetGameMode(GetWorld());
-	if (IsValid(BaseGameMode))
-	{
-		for (int PlayerIndex = 0; PlayerIndex < BaseGameMode->GetNumPlayers(); ++PlayerIndex)
-		{
-			ACpp_Marine* RefMarine = GetMarine(PlayerIndex);
-			if (IsValid(RefMarine))
-			{
-				if (Marine == RefMarine)
-				{
-					return PlayerIndex;
-				}
-			}
-		}
-	}
-	return 0;
 }
 
 void ACpp_MIssionAreaVolume::MakeTimers()
@@ -111,6 +84,6 @@ void ACpp_MIssionAreaVolume::MakeTimers()
 FTimerHandle& ACpp_MIssionAreaVolume::GetTimer(ACpp_Marine* Marine)
 {
 	MakeTimers();
-	int PlayerIndex = GetPlayerIndex(Marine);
+	int PlayerIndex = Marine->GetPlayerIndex();
 	return TimersHandleKillPlayer[PlayerIndex];
 }

@@ -247,16 +247,6 @@ void ACpp_Alien::DestroyActor()
 	Destroy();
 }
 
-ACpp_Marine* ACpp_Alien::GetMarine(int32 PlayerIndex) const
-{
-	ACharacter* Character = UGameplayStatics::GetPlayerCharacter(GetWorld(), PlayerIndex);
-	if (IsValid(Character))
-	{
-		return Cast<ACpp_Marine>(Character);
-	}
-	return nullptr;
-}
-
 ACpp_Marine* ACpp_Alien::GetNearestPlayer() const
 {
 	AGameModeBase* BaseGameMode = UGameplayStatics::GetGameMode(GetWorld());
@@ -266,7 +256,7 @@ ACpp_Marine* ACpp_Alien::GetNearestPlayer() const
 		float PlayerDistance = 5000;
 		for (int PlayerIndex = 0; PlayerIndex < BaseGameMode->GetNumPlayers(); ++PlayerIndex)
 		{
-			ACpp_Marine* Marine = GetMarine(PlayerIndex);
+			ACpp_Marine* Marine = ACpp_Marine::GetMarine(GetWorld(), PlayerIndex);
 			if (IsValid(Marine))
 			{
 				if (!Marine->IsAlive())
