@@ -219,7 +219,7 @@ float ACpp_Marine::DecreaseHealth(float DamageAmount)
 
 	if (IsValid(PlayerHurtSound))
 	{
-		UGameplayStatics::SpawnSound2D(GetWorld(), PlayerHurtSound);
+		UGameplayStatics::SpawnSound2D(GetWorld(), PlayerHurtSound, ACpp_Marine::GetVolume());
 	}
 
 	return Health;
@@ -348,7 +348,7 @@ void ACpp_Marine::StartFiringWeapon()
 
 		if (!IsValid(WeaponFireSound))
 		{
-			WeaponFireSound = UGameplayStatics::SpawnSound2D(GetWorld(), RifleFireSound);
+			WeaponFireSound = UGameplayStatics::SpawnSound2D(GetWorld(), RifleFireSound, ACpp_Marine::GetVolume());
 
 			WeaponTrace();
 			
@@ -377,7 +377,7 @@ void ACpp_Marine::StopFiringWeapon()
 		WeaponFireSound->Stop();
 		WeaponFireSound = nullptr;
 
-		UGameplayStatics::SpawnSound2D(GetWorld(), RifleEndSound);
+		UGameplayStatics::SpawnSound2D(GetWorld(), RifleEndSound, ACpp_Marine::GetVolume());
 	}
 }
 
@@ -605,4 +605,9 @@ int32 ACpp_Marine::GetPlayerIndex() const
 		}
 	}
 	return 0;
+}
+
+float ACpp_Marine::GetVolume()
+{
+	return 0.1f;
 }

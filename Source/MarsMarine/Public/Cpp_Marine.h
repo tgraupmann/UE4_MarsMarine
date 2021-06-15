@@ -34,6 +34,8 @@ protected:
 
 public:
 
+	static float GetVolume();
+
 	static class ACpp_Marine* GetMarine(UWorld* World, int32 PlayerIndex);
 
 	int32 GetPlayerIndex() const;

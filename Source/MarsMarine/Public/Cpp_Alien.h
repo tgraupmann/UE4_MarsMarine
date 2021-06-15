@@ -26,6 +26,18 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UFUNCTION(BlueprintCallable)
+	bool IsAlive() const;
+
+	UFUNCTION(BlueprintCallable)
+	bool IsDead() const;
+
+	UFUNCTION(BlueprintCallable)
+	bool IsWithinAttackRange() const;
+
+	UFUNCTION(BlueprintCallable)
+	void DamagePlayer();
+
 protected:
 
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
@@ -35,19 +47,10 @@ protected:
 
 
 	UFUNCTION(BlueprintCallable)
-	bool IsAlive() const;
-
-	UFUNCTION(BlueprintCallable)
-	bool IsDead() const;
-
-	UFUNCTION(BlueprintCallable)
 	bool CanAttack() const;
 
 	UFUNCTION(BlueprintCallable)
 	bool IsAttacking() const;
-
-	UFUNCTION(BlueprintCallable)
-	bool IsWithinAttackRange() const;
 
 	UFUNCTION(BlueprintCallable)
 	float GetHealth() const;
@@ -57,9 +60,6 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void ActivateAIMovement();
-
-	UFUNCTION(BlueprintCallable)
-	void DamagePlayer();
 
 	UFUNCTION(BlueprintCallable)
 	float DecreaseHealth(float Damage);

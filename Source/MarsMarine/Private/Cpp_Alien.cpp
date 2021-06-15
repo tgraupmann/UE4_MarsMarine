@@ -151,7 +151,7 @@ float ACpp_Alien::DecreaseHealth(float Damage)
 	Health = UKismetMathLibrary::Max(0, Health);
 	if (IsValid(EnemyHurtSound))
 	{
-		UGameplayStatics::SpawnSound2D(GetWorld(), EnemyHurtSound);
+		UGameplayStatics::SpawnSound2D(GetWorld(), EnemyHurtSound, ACpp_Marine::GetVolume());
 	}
 	return Health;
 }
